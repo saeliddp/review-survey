@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .header {
+      padding-top: 8px;
+      margin: 0px;
+      text-align: center;
+      color: #63aba8;
+      font-family: "verdana";
+    }
+    
+    .mturk-id {
+      display: table;
+      margin: auto;
+      margin-top: 50px;
+	  text-align: center;
+    }
+
+    .mturk-id input {
+      margin-top: 5px;
+    }
+	.question {
+		padding-bottom: 10px;
+	}
+
+	.question{
+		font-family: "verdana";
+	}
+
+	.question label {
+		font-size: 15px;
+	}
+
+	form input{
+		margin-top: 10px;
+	}
+  </style>
+  <title>Product Review Survey</title>
+</head>
+<body style="background-color: #f2f2f2">
+<h1 class="header">Thank you!</h1>
+  
+<div class="mturk-id">
+  <p class="question">Thank you for taking this survey.</p>
+  <form action='../thanks{{ respondent_id }}/' id='main_form' method='get'>	
+    <div class="question">
+		<label for="mturk-id">Please enter your <b>MTurk Worker ID</b> below:</label><br>
+		<input type="text" name="mturk_id">
+	</div>
+	<br>
+	
+    <input type="submit" id="submit" value="submit">
+  </form>
+</div>
+
+</body>
+</html>

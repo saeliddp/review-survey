@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.header {
+  background-color: #f2f2f2;
+  padding-top: 10px;
+  padding-bottom: 15px;
+  margin: 0px;
+  text-align: center;
+  color: #63aba8;
+  font-family: "verdana";
+}
+p {
+	font-family: "verdana";
+	color: #565656;
+	text-align: center;
+	font-size: 14px;
+	margin: auto;
+	width: 60%;
+}
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 5px;
+} 
+a {
+	text-align: center;
+	font-family: "verdana";
+}
+.form-radio {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      display: inline-block;
+      position: relative;
+      background-color: #d3d3d3;
+      color: #666;
+      top: 10px;
+      height: 30px;
+      width: 30px;
+      border: 1px solid #ccc;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-right: 7px;
+      outline: none;
+    }
+.form-radio:checked::before {
+  position: absolute;
+  font: 13px/1 'Open Sans', sans-serif;
+  left: 11px;
+  top: 7px;
+  content: '\02143';
+  color: white;
+  transform: rotate(40deg);
+}
+.form-radio:hover {
+  background-color: #f7f7f7;
+}
+.form-radio:checked {
+  background-color: #63aba8;
+}
+.button {
+    background-color: #63aba8;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.button:hover {
+    background-color: #4d8583;
+}
+.button:disabled {
+	  background-color: #d3d3d3;
+	}
+p {
+  text-align: left;
+}
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  padding: 1px;
+  border: 1px solid #021a40;
+  background-color:red;
+}
+.main_divs {
+	  margin: auto;
+	  width: 60%;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 5px;
+}
+.column {
+      width: 40%;
+      margin: 5px;
+      padding: 5px;
+    }
+    .columnl {
+      float: left;
+    }
+    .columnr {
+      float: right;
+    }
+.desc {
+	  margin: auto;
+      background-color: white;
+      text-align: left;
+      padding: 15px;
+      width: 60%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: "verdana";
+      color: #565656;
+	  float: center;
+}
+.instr {
+	  margin: auto;
+      background-color: #f2f2f2;
+      text-align: center;
+      padding: 15px;
+      width: 60%;
+      font-family: "verdana";
+      color: #565656;
+	  float: center;
+}
+.review {
+	  background-color: white;
+      text-align: left;
+      padding: 15px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: "verdana";
+      color: #565656;
+	  float: center;
+}
+.row:after {
+      content: "";
+      display: table;
+      clear: both;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+</style>
+  <title>Product Review Survey</title>
+</head>
+<body style="background-color: #f2f2f2">
+<h1 class="header">Product Review Survey</h1>
+<div class="instr">Please read the following description of "{{ name }}"</div>
+<div class="desc">
+<u><b>{{ name }}</b></u>: {{ description }}
+</div>
+<div></div>
+<div>
+<div class="instr">Please rate the following reviews of "{{ name }}" on a scale from 1-5</div>
+</div>
+<div style="text-align: center">
+	<form action="../../{{ respondent_id }}/{{ position }}" id="to_driver" method="get">
+		<div class="row main_divs">
+		<div class="column columnl">
+		<div class="review">
+		<b><u>Review 1</u></b>: {{ review1 }}
+		</div>
+		</div>
+		<div class="column columnr">
+		<div>
+			<font face="verdana">
+			<b>1</b>
+			<input type="radio" name="radio1" value="1" class="form-radio">
+			<input type="radio" name="radio1" value="2" class="form-radio">
+			<input type="radio" name="radio1" value="3" class="form-radio">
+			<input type="radio" name="radio1" value="4" class="form-radio">
+			<input type="radio" name="radio1" value="5" class="form-radio">
+			<b>5</b>
+			</font>
+		</div>
+		</div>
+		</div>
+		
+		<div class="row main_divs">
+		<div class="column columnl">
+		<div class="review">
+		<b><u>Review 2</u></b>: {{ review2 }}
+		</div>
+		</div>
+		<div class="column columnr">
+		<div>
+			<font face="verdana">
+			<b>1</b>
+			<input type="radio" name="radio2" value="1" class="form-radio">
+			<input type="radio" name="radio2" value="2" class="form-radio">
+			<input type="radio" name="radio2" value="3" class="form-radio">
+			<input type="radio" name="radio2" value="4" class="form-radio">
+			<input type="radio" name="radio2" value="5" class="form-radio">
+			<b>5</b>
+			</font>
+		</div>
+		</div>
+		</div>
+		
+		<div class="row main_divs">
+		<div class="column columnl">
+		<div class="review">
+		<b><u>Review 3</u></b>: {{ review3 }}
+		</div>
+		</div>
+		<div class="column columnr">
+		<div>
+			<font face="verdana">
+			<b>1</b>
+			<input type="radio" name="radio3" value="1" class="form-radio">
+			<input type="radio" name="radio3" value="2" class="form-radio">
+			<input type="radio" name="radio3" value="3" class="form-radio">
+			<input type="radio" name="radio3" value="4" class="form-radio">
+			<input type="radio" name="radio3" value="5" class="form-radio">
+			<b>5</b>
+			</font>
+		</div>
+		</div>
+		</div>
+		
+		<input type="submit" value="submit" class="button" id="submit_button" disabled>
+		<input type="hidden" id="surv_submit" name="surv_submit" value="true">
+		<input type="hidden" id="review1place" name="review1place" value={{ review1place }}>
+		<input type="hidden" id="review2place" name="review2place" value={{ review2place }}>
+		<input type="hidden" id="review3place" name="review3place" value={{ review3place }}>
+
+	</form>
+</div>
+</body>
+<script>
+var formElements = window.document.getElementById("to_driver").elements;
+var formElement;
+var radioArray = [];
+
+for (var i = 0, j = 0; i < formElements.length; i++) {
+    formElement = formElements.item(i);
+    if (formElement.type === "radio") {
+        radioArray[j] = formElement;
+        ++j;
+    }
+}
+
+for (var i = 0; i < radioArray.length; i++) {
+	radioArray[i].onclick = function() {
+		var num = 0;
+		for (var j = 0; j < radioArray.length; j++) {
+			if (radioArray[j].checked) {
+				num++;
+			}
+		}
+		if (num > 2) {
+			document.getElementById("submit_button").disabled = false;
+		} else {
+			document.getElementById("submit_button").disabled = true;
+		}
+	}
+}
+</script>
+</html>

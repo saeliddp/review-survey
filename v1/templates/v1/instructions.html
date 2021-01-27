@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.header {
+  background-color: #f2f2f2;
+  padding-top: 10px;
+  margin: 0px;
+  text-align: center;
+  color: #63aba8;
+  font-family: "verdana";
+}
+p {
+	font-family: "verdana";
+	color: #565656;
+	text-align: center;
+	font-size: 14px;
+	margin-top: 10px;
+	margin-left: 100px;
+	margin-right: 100px;
+	margin-bottom: 10px;
+}
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 5px;
+} 
+a {
+	text-align: center;
+	font-family: "verdana";
+}
+.button {
+    background-color: #63aba8;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.button:hover {
+    background-color: #4d8583;
+}
+p {
+  text-align: left;
+}
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  padding: 1px;
+  border: 1px solid #021a40;
+  background-color:red;
+}
+</style>
+  <title>Product Review Survey</title>
+</head>
+<body style="background-color: #f2f2f2">
+<h1 class="header">Instructions</h1>
+<div>
+	<p>1. You will be shown a description of a product and three reviews of that product</p>
+  <p>2. Rate each of the reviews on a scale from 1 to 5, where 1 is "this review is not useful at all" and 5 is "this review is very useful"</p>
+	<p>3. Press submit</p>
+  <p>4. You will then be directed to a similar page for the next product.</p>
+  <p>5. There will be 15 pages. After you have submitted the last page, please enter your MTurk ID. </p>
+  <p>A given survey page will look like this:</p>
+</div>
+{% load staticfiles %}
+<img src="{% static 'v1/demo.jpg' %}" alt="demo">
+
+<div style="text-align: center">
+	<form action="../../{{ respondent_id }}/{{ position }}" id="to_driver" method="get">
+		<input type="submit" value="begin" class="button">
+		<input type="hidden" id="instr_submit" name="instr_submit" value="true">
+	</form>
+</div>
+</body>
+</html>

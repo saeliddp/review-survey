@@ -50,13 +50,13 @@ def upload():
         desc = line_buf[1]
         for piece in line_buf[2:-3]:
             desc = desc + piece
-        desc = BeautifulSoup(desc).text
+        desc = BeautifulSoup(desc.strip()).text
         """
         if len(desc) > max_desc[0]:
             max_desc[0] = len(desc)
             max_desc[1] = desc
         """
-        Product(name=line_buf[0].strip(), description=desc.strip(), review1=line_buf[-3].strip(), review2=line_buf[-2].strip(), review3=line_buf[-1].strip()).save() 
+        Product(name=BeautifulSoup(line_buf[0].strip()).text, description=desc.strip(), review1=line_buf[-3].strip(), review2=line_buf[-2].strip(), review3=line_buf[-1].strip()).save() 
         
     print(count)
 #print(str(max_name))

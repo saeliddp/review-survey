@@ -25,7 +25,7 @@ SECRET_KEY = '#kuen4mahbkx9e=x)p7y43p@z5a2=)-&+_js5y*^zc0v+-kwkk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['review-survey.herokuapp.com', 'localhost']
 
 
 # Application definition

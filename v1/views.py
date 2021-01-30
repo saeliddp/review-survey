@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.cache import cache_control
 from v1.models import *
 from random import randint, shuffle
+import csv, datetime
 
 def entry(request):
     # create new Respondent in database
@@ -113,3 +114,42 @@ def thanks(request, respondent_id):
         return render(request, 'v1/code.html')
     else:
         return render(request, 'v1/thanks.html', context)
+
+def export_users(request):
+    response = HttpResponse(content_type="text/csv")
+    writer = csv.writer(response)
+    writer.writerow(['id', 'mturk_id', 'pages_completed', 'date'])
+    
+    for u in Respondent.objects.all().values_list('id', 'mturk_id', 'position', 'date'):
+        writer.writerow(u)
+    
+    today = datetime.date.today()
+    filename = "users_" + today.strftime("%m_%d_%Y") + ".csv"
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    return response
+
+def export_ratings(request):
+    response = HttpResponse(content_type="text/csv")
+    writer = csv.writer(response)
+    writer.writerow(['user_id', 'product_id', 'review1_rating', 'review2_rating', 'review3_rating'])
+    
+    for r in Rating.objects.all():
+        writer.writerow([r.respondent.id, r.product.id, r.review1_rating, r.review2_rating, r.review3_rating])
+    
+    today = datetime.date.today()
+    filename = "ratings_" + today.strftime("%m_%d_%Y") + ".csv"
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    return response
+
+def export_products(request):
+    response = HttpResponse(content_type="text/csv")
+    writer = csv.writer(response)
+    writer.writerow(['id', 'name', 'review1', 'review2', 'review3'])
+    
+    for p in Product.objects.all():
+        writer.writerow([p.id, p.name, p.review1, p.review2, p.review3])
+        
+    today = datetime.date.today()
+    filename = "products_" + today.strftime("%m_%d_%Y") + ".csv"
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    return response

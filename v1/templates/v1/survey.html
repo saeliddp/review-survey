@@ -150,24 +150,24 @@ img {
       border-radius: 4px;
     }
 </style>
-  <title>Product Review Survey</title>
+  <title>Recommendation Explanation Survey</title>
 </head>
 <body style="background-color: #f2f2f2">
-<h1 class="header">Product Review Survey</h1>
+<h1 class="header">Recommendation Explanation Survey</h1>
 <div class="instr">Please read the following description of "{{ name }}"</div>
 <div class="desc">
 <u><b>{{ name }}</b></u>: {{ description }}
 </div>
 <div></div>
 <div>
-<div class="instr">Please rate the following reviews of "{{ name }}" on a scale from 1-5</div>
+<div class="instr">Please rate the following reviews of "{{ name }}" on a scale from 1-5, with 1 being the worst explanation and 5 being the best explanation.</div>
 </div>
 <div style="text-align: center">
 	<form action="../../{{ respondent_id }}/{{ position }}" id="to_driver" method="get">
 		<div class="row main_divs">
 		<div class="column columnl">
 		<div class="review">
-		<b><u>Review 1</u></b>: {{ review1 }}
+		<b><u>Explanation 1</u></b>: {{ review1 }}
 		</div>
 		</div>
 		<div class="column columnr">
@@ -188,7 +188,7 @@ img {
 		<div class="row main_divs">
 		<div class="column columnl">
 		<div class="review">
-		<b><u>Review 2</u></b>: {{ review2 }}
+		<b><u>Explanation 2</u></b>: {{ review2 }}
 		</div>
 		</div>
 		<div class="column columnr">
@@ -209,7 +209,7 @@ img {
 		<div class="row main_divs">
 		<div class="column columnl">
 		<div class="review">
-		<b><u>Review 3</u></b>: {{ review3 }}
+		<b><u>Explanation 3</u></b>: {{ review3 }}
 		</div>
 		</div>
 		<div class="column columnr">

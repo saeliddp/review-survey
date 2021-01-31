@@ -35,7 +35,7 @@
 	form input{
 		margin-top: 10px;
 	}
-	.button {
+.button {
     background-color: #63aba8;
     border: none;
     color: white;
@@ -58,16 +58,19 @@
   <title>Recommendation Explanation Survey</title>
 </head>
 <body style="background-color: #f2f2f2">
-<h1 class="header">Thank you!</h1>
+<h1 class="header">Final Questions</h1>
   
 <div class="mturk-id">
-  <p class="question">Thank you for taking this survey.</p>
+
   <form action='../../{{ respondent_id }}/{{ position }}' id='to_driver' method='get'>	
     <div class="question">
-		<label for="mturk-id">Please enter your <b>MTurk Worker ID</b> below:</label><br>
-		<input type="text" id="mturk_id" name="mturk_id" onkeyup="manage(this)">
+		<label for="factors">1. What factors affect your ratings of explanations? (mandatory)</label><br><br>
+		<textarea rows="5" cols="60" id= "factors" name="factors" onkeyup="manage(this)" maxlength=255></textarea>
+	</div><br>
+	<div class="question">
+		<label for="additional">2. Any additional comments or suggestions on this survey? (optional)</label><br><br>
+		<textarea rows="5" cols="60" id="additional" name="additional" maxlength=255></textarea>
 	</div>
-	<br>
 	
     <input type="submit" class="button" id="submit_button" value="submit" disabled>
   </form>
@@ -75,6 +78,11 @@
 
 </body>
 <script>
+document.getElementById("factors").style.height = "100px";
+document.getElementById("factors").style.width = "400px";
+document.getElementById("additional").style.height = "100px";
+document.getElementById("additional").style.width = "400px";
+
 function manage(txt) {
 	if (txt.value.length === 0) {
 		document.getElementById("submit_button").disabled = true;

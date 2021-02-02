@@ -12,6 +12,7 @@ class Respondent(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=210, default="None")
+    amazon_id = models.CharField(max_length=50, default="None")
     description = models.CharField(max_length=800, default="None")
     review1 = models.CharField(max_length=130, default="None")
     review2 = models.CharField(max_length=130, default="None")

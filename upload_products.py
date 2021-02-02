@@ -56,7 +56,8 @@ def upload():
             max_desc[0] = len(desc)
             max_desc[1] = desc
         """
-        Product(name=BeautifulSoup(line_buf[0].strip()).text, description=desc.strip(), review1=line_buf[-3].strip(), review2=line_buf[-2].strip(), review3=line_buf[-1].strip()).save() 
+        init_piece = line_buf[0].split("#")
+        Product(name=BeautifulSoup(init_piece[0].strip()).text, amazon_id=init_piece[1].strip(), description=desc.strip(), review1=line_buf[-3].strip(), review2=line_buf[-2].strip(), review3=line_buf[-1].strip()).save() 
         
     print(count)
 #print(str(max_name))

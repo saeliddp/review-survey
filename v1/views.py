@@ -17,7 +17,7 @@ def instructions(request):
     
         products = Product.objects.filter(num_responses__lt=responses_per_prod)
         # FOR TESTING ONLY
-        products = products.filter(id__lt=11)
+        products = products.filter(id__lt=61)
         print(len(products))
         ###
         if (len(products) < responses_per_user):

@@ -8,34 +8,39 @@ import csv, datetime
 responses_per_prod = 3
 responses_per_user = 10
 
-def entry(request):
-    # create new Respondent in database
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)       
+def instructions(request):
     global responses_per_prod
     global responses_per_user
+    if "instr_submit" in request.GET:
+        #user pressed begin, must create user
     
-    products = Product.objects.filter(num_responses__lt=responses_per_prod)
-    # FOR TESTING ONLY
-    products = products.filter(id__lt=11)
-    print(len(products))
-    ###
-    if (len(products) < responses_per_user):
-        return render(request, "v1/complete.html")
-    indices = [i for i in range(len(products))]
-    
-    selected_prod = products[indices.pop(randint(0, len(indices) - 1))]
-    p_seq = str(selected_prod.id)
-    selected_prod.num_responses += 1
-    selected_prod.save()
-    for _ in range(responses_per_user - 1):
+        products = Product.objects.filter(num_responses__lt=responses_per_prod)
+        # FOR TESTING ONLY
+        products = products.filter(id__lt=11)
+        print(len(products))
+        ###
+        if (len(products) < responses_per_user):
+            return render(request, "v1/complete.html")
+            
+        indices = [i for i in range(len(products))]
+        
         selected_prod = products[indices.pop(randint(0, len(indices) - 1))]
-        p_seq += " " + str(selected_prod.id)
+        p_seq = str(selected_prod.id)
         selected_prod.num_responses += 1
         selected_prod.save()
-    
-    respondent = Respondent()
-    respondent.product_seq = p_seq
-    respondent.save()
-    return redirect("driver", respondent.id, respondent.position)
+        for _ in range(responses_per_user - 1):
+            selected_prod = products[indices.pop(randint(0, len(indices) - 1))]
+            p_seq += " " + str(selected_prod.id)
+            selected_prod.num_responses += 1
+            selected_prod.save()
+        
+        respondent = Respondent(position=1)
+        respondent.product_seq = p_seq
+        respondent.save()
+        return redirect("driver", respondent.id, respondent.position)
+    else:
+        return render(request, "v1/instructions.html")
     
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)    
 def driver(request, respondent_id, position):
@@ -44,16 +49,8 @@ def driver(request, respondent_id, position):
     # find user, compare given position with database position
     respondent = Respondent.objects.get(id=respondent_id)
     
-    if respondent.position == position: # normal case
-        if respondent.position == 0:
-            if "instr_submit" in request.GET:
-                # increment position in database
-                respondent.position += 1
-                respondent.save()
-                return redirect("survey", respondent_id, respondent.position)
-            else:
-                return redirect("instructions", respondent_id, respondent.position)
-        elif respondent.position <= responses_per_user:
+    if respondent.position == position: # normal case           
+        if respondent.position <= responses_per_user:
             # update db with responses
             if "surv_submit" in request.GET:
                 rev1radio = "radio" + str(request.GET["review1place"])
@@ -99,18 +96,6 @@ def driver(request, respondent_id, position):
             # thanks
     else: # trying to use back button case
         return redirect("driver", respondent_id, respondent.position)
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)       
-def instructions(request, respondent_id, position):
-    respondent = Respondent.objects.get(id=respondent_id)
-    if respondent.position != position:
-        return redirect("driver", respondent_id, respondent.position)
-
-    context = {
-        "respondent_id": respondent_id,
-        "position": position
-    }
-    return render(request, "v1/instructions.html", context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def survey(request, respondent_id, position):

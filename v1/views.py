@@ -187,10 +187,10 @@ def export_ratings(request):
 def export_products(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
-    writer.writerow(['id', 'name', 'review1', 'review2', 'review3'])
+    writer.writerow(['id', 'name', 'amazon_id', 'review1', 'review2', 'review3'])
     
     for p in Product.objects.all():
-        writer.writerow([p.id, p.name, p.review1, p.review2, p.review3])
+        writer.writerow([p.id, p.name, p.amazon_id, p.review1, p.review2, p.review3])
         
     today = datetime.date.today()
     filename = "products_" + today.strftime("%m_%d_%Y") + ".csv"

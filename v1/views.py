@@ -159,10 +159,10 @@ def export_users(request):
 def export_ratings(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
-    writer.writerow(['user_id', 'product_id', 'review1_rating', 'review2_rating', 'review3_rating'])
+    writer.writerow(['user_id', 'product_id', 'product_amazon_id', 'review1_rating', 'review2_rating', 'review3_rating'])
     
     for r in Rating.objects.all():
-        writer.writerow([r.respondent.id, r.product.id, r.review1_rating, r.review2_rating, r.review3_rating])
+        writer.writerow([r.respondent.id, r.product.id, r.product.amazon_id, r.review1_rating, r.review2_rating, r.review3_rating])
     
     today = datetime.date.today()
     filename = "ratings_" + today.strftime("%m_%d_%Y") + ".csv"

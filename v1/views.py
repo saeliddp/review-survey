@@ -5,7 +5,7 @@ from v1.models import *
 from random import randint, shuffle
 import csv, datetime
 
-responses_per_prod = 3
+responses_per_prod = 5
 responses_per_user = 10
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)       
@@ -17,8 +17,8 @@ def instructions(request):
     
         products = Product.objects.filter(num_responses__lt=responses_per_prod)
         # FOR TESTING ONLY
-        products = products.filter(id__lt=61)
-        print(len(products))
+        #products = products.filter(id__lt=61)
+        #print(len(products))
         ###
         if (len(products) < responses_per_user):
             return render(request, "v1/complete.html")

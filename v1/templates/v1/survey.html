@@ -160,7 +160,7 @@ img {
 </div>
 <div></div>
 <div>
-<div class="instr">Please rate the following explanations of recommending "{{ name }}" on a scale from 1-5, with 1 being the worst explanation and 5 being the best explanation.</div>
+<div class="instr">Please rate the following explanations of recommending "{{ name }}" on a scale from 1-5, with 1 being the worst quality for a given explanation and 5 being the best quality for a given explanation.</div>
 </div>
 <div style="text-align: center">
 	<form action="../../{{ respondent_id }}/{{ position }}" id="to_driver" method="get">
@@ -232,37 +232,49 @@ img {
 		<input type="hidden" id="review1place" name="review1place" value={{ review1place }}>
 		<input type="hidden" id="review2place" name="review2place" value={{ review2place }}>
 		<input type="hidden" id="review3place" name="review3place" value={{ review3place }}>
+		<input type="hidden" id="time_elapsed" name="time_elapsed" value=0>
 
 	</form>
 </div>
 </body>
 <script>
+var elapsed = 0;
 var formElements = window.document.getElementById("to_driver").elements;
 var formElement;
 var radioArray = [];
-
 for (var i = 0, j = 0; i < formElements.length; i++) {
-    formElement = formElements.item(i);
-    if (formElement.type === "radio") {
-        radioArray[j] = formElement;
-        ++j;
-    }
-}
-
-for (var i = 0; i < radioArray.length; i++) {
-	radioArray[i].onclick = function() {
-		var num = 0;
-		for (var j = 0; j < radioArray.length; j++) {
-			if (radioArray[j].checked) {
-				num++;
-			}
-		}
-		if (num > 2) {
-			document.getElementById("submit_button").disabled = false;
-		} else {
-			document.getElementById("submit_button").disabled = true;
-		}
+	formElement = formElements.item(i);
+	if (formElement.type === "radio") {
+		radioArray[j] = formElement;
+		++j;
 	}
 }
+
+function checkRadios() {
+	var num = 0;
+	for (var j = 0; j < radioArray.length; j++) {
+		if (radioArray[j].checked) {
+			num++;
+		}
+	}
+	if (num > 2) {
+		document.getElementById("submit_button").disabled = false;
+	} else {
+		document.getElementById("submit_button").disabled = true;
+	}
+}
+
+function updateSeconds() {
+	elapsed++;
+	document.getElementById("time_elapsed").value = elapsed;
+	if (elapsed == 5) {
+
+		for (var i = 0; i < radioArray.length; i++) {
+			radioArray[i].onclick = checkRadios;
+		}
+		checkRadios();
+	}
+}
+setInterval(updateSeconds, 1000);
 </script>
 </html>

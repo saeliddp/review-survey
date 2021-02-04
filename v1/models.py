@@ -25,3 +25,4 @@ class Rating(models.Model):
     review1_rating = models.PositiveSmallIntegerField(default=0)
     review2_rating = models.PositiveSmallIntegerField(default=0)
     review3_rating = models.PositiveSmallIntegerField(default=0)
+    time_elapsed = models.PositiveSmallIntegerField(default=0)

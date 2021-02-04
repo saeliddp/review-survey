@@ -63,7 +63,8 @@ def driver(request, respondent_id, position):
                 Rating(respondent=respondent, product=prod, 
                         review1_rating=request.GET[rev1radio],
                         review2_rating=request.GET[rev2radio],
-                        review3_rating=request.GET[rev3radio]).save()
+                        review3_rating=request.GET[rev3radio],
+                        time_elapsed=request.GET["time_elapsed"]).save()
                 
                 respondent.position += 1
                 if " " in respondent.product_seq:
@@ -159,10 +160,10 @@ def export_users(request):
 def export_ratings(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
-    writer.writerow(['user_id', 'product_id', 'product_amazon_id', 'review1_rating', 'review2_rating', 'review3_rating'])
+    writer.writerow(['user_id', 'product_id', 'product_amazon_id', 'review1_rating', 'review2_rating', 'review3_rating', 'time_elapsed'])
     
     for r in Rating.objects.all():
-        writer.writerow([r.respondent.id, r.product.id, r.product.amazon_id, r.review1_rating, r.review2_rating, r.review3_rating])
+        writer.writerow([r.respondent.id, r.product.id, r.product.amazon_id, r.review1_rating, r.review2_rating, r.review3_rating, r.time_elapsed])
     
     today = datetime.date.today()
     filename = "ratings_" + today.strftime("%m_%d_%Y") + ".csv"

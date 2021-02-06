@@ -17,10 +17,10 @@ def instructions(request):
     
         products = Product.objects.filter(num_responses__lt=responses_per_prod)
         # FOR TESTING ONLY
-        #products = products.filter(id__lt=61)
+        products = products.filter(id__lt=61)
         #print(len(products))
         ###
-        if (len(products) < responses_per_user):
+        if (len(products) < 1):
             return render(request, "v1/complete.html")
             
         indices = [i for i in range(len(products))]

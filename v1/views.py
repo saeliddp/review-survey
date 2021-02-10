@@ -15,6 +15,7 @@ def get_next_product(prod_seq_entries=[]):
     products = Product.objects.filter(num_responses__lt=responses_per_prod)
     # FOR TESTING ONLY
     products = products.filter(id__lt=635)
+    products = products.filter(id__gt=60)
     #print(len(products))
     indices = []
     prod_seq_entries = [int(i) for i in prod_seq_entries]

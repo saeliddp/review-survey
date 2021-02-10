@@ -5,8 +5,8 @@ from v1.models import *
 from random import randint, shuffle
 import csv, datetime
 
-responses_per_prod = 3
-responses_per_user = 3
+responses_per_prod = 5
+responses_per_user = 10
 
 # prod_seq_entries should be a list of product ids
 def get_next_product(prod_seq_entries=[]):
@@ -14,7 +14,7 @@ def get_next_product(prod_seq_entries=[]):
     
     products = Product.objects.filter(num_responses__lt=responses_per_prod)
     # FOR TESTING ONLY
-    products = products.filter(id__lt=4)
+    products = products.filter(id__lt=635)
     #print(len(products))
     indices = []
     prod_seq_entries = [int(i) for i in prod_seq_entries]
@@ -103,7 +103,6 @@ def driver(request, respondent_id, position):
                         respondent.save()
                         return redirect("driver", respondent_id, respondent.position)
                     else:
-                    
                         respondent.product_seq = str(next_prod.id) + " " + respondent.product_seq
                         respondent.save()
                         return redirect("survey", respondent_id, respondent.position)

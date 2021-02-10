@@ -5,38 +5,39 @@ from v1.models import *
 from random import randint, shuffle
 import csv, datetime
 
-responses_per_prod = 5
-responses_per_user = 10
+responses_per_prod = 3
+responses_per_user = 3
 
+# prod_seq_entries should be a list of product ids
+def get_next_product(prod_seq_entries=[]):
+    global responses_per_prod
+    
+    products = Product.objects.filter(num_responses__lt=responses_per_prod)
+    # FOR TESTING ONLY
+    products = products.filter(id__lt=4)
+    #print(len(products))
+    indices = []
+    prod_seq_entries = [int(i) for i in prod_seq_entries]
+    
+    for i, p in enumerate(products):
+        if p.id not in prod_seq_entries:
+            indices.append(i)
+    
+    if len(indices) == 0:
+        return None
+    else:
+        product = products[indices[randint(0, len(indices) - 1)]]
+        product.num_responses += 1
+        product.save()
+        return product
+        
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)       
 def instructions(request):
     global responses_per_prod
     global responses_per_user
     if "instr_submit" in request.GET:
-        #user pressed begin, must create user
-    
-        products = Product.objects.filter(num_responses__lt=responses_per_prod)
-        # FOR TESTING ONLY
-        products = products.filter(id__lt=61)
-        #print(len(products))
-        ###
-        if (len(products) < 1):
-            return render(request, "v1/complete.html")
-            
-        indices = [i for i in range(len(products))]
-        
-        selected_prod = products[indices.pop(randint(0, len(indices) - 1))]
-        p_seq = str(selected_prod.id)
-        selected_prod.num_responses += 1
-        selected_prod.save()
-        for _ in range(responses_per_user - 1):
-            selected_prod = products[indices.pop(randint(0, len(indices) - 1))]
-            p_seq += " " + str(selected_prod.id)
-            selected_prod.num_responses += 1
-            selected_prod.save()
-        
-        respondent = Respondent(position=1)
-        respondent.product_seq = p_seq
+        #user pressed begin, must create user        
+        respondent = Respondent()
         respondent.save()
         return redirect("driver", respondent.id, respondent.position)
     else:
@@ -49,9 +50,39 @@ def driver(request, respondent_id, position):
     # find user, compare given position with database position
     respondent = Respondent.objects.get(id=respondent_id)
     
-    if respondent.position == position: # normal case           
-        if respondent.position <= responses_per_user:
-            # update db with responses
+    if respondent.position == position: # normal case 
+        prod_seq_entries = respondent.product_seq.split(" ")
+        respondent.position += 1
+        
+        if prod_seq_entries[0] == "None": # first survey
+            next_prod = get_next_product()
+            if next_prod is None:
+                return render(request, "v1/complete.html")
+            else:
+                respondent.product_seq = str(next_prod.id)
+                respondent.save()
+                return redirect("survey", respondent_id, respondent.position)
+                
+        elif prod_seq_entries[0] == "Factors":
+            if "factors" in request.GET:
+                respondent.product_seq = "MTurk " + respondent.product_seq
+                respondent.factors = request.GET["factors"][:255]
+                if "additional" in request.GET:
+                    respondent.additional = request.GET["additional"][:255]
+                respondent.save()
+                return redirect("thanks", respondent_id, respondent.position)
+            respondent.save()
+            return redirect("thoughts", respondent_id, respondent.position)
+        
+        elif prod_seq_entries[0] == "MTurk":
+            if "mturk_id" in request.GET:
+                respondent.mturk_id = request.GET["mturk_id"][:50]
+                respondent.save()
+                return render(request, "v1/code.html")
+            respondent.save()
+            return redirect("thanks", respondent_id, respondent.position)
+            
+        elif len(prod_seq_entries) <= responses_per_user:
             if "surv_submit" in request.GET:
                 rev1radio = "radio" + str(request.GET["review1place"])
                 rev2radio = "radio" + str(request.GET["review2place"])
@@ -65,38 +96,29 @@ def driver(request, respondent_id, position):
                         review2_rating=request.GET[rev2radio],
                         review3_rating=request.GET[rev3radio],
                         time_elapsed=request.GET["time_elapsed"]).save()
-                
-                respondent.position += 1
-                if " " in respondent.product_seq:
-                    respondent.product_seq = respondent.product_seq[respondent.product_seq.index(" ") + 1:]
+                if len(prod_seq_entries) < responses_per_user:
+                    next_prod = get_next_product(respondent.product_seq.split(" "))
+                    if next_prod is None:
+                        respondent.product_seq = "Factors " + respondent.product_seq
+                        respondent.save()
+                        return redirect("driver", respondent_id, respondent.position)
+                    else:
+                    
+                        respondent.product_seq = str(next_prod.id) + " " + respondent.product_seq
+                        respondent.save()
+                        return redirect("survey", respondent_id, respondent.position)
                 else:
-                    #redirect to thoughts page
-                    respondent.product_seq = "Done"
+                    respondent.product_seq = "Factors " + respondent.product_seq
                     respondent.save()
-                    return redirect("thoughts", respondent_id, respondent.position)
+                    return redirect("driver", respondent_id, respondent.position)
+            else:
+                respondent.position -= 1
                 respondent.save()
-            return redirect("survey", respondent_id, respondent.position)
+                return redirect("survey", respondent_id, respondent.position)
             
-        elif respondent.position == responses_per_user + 1:
-            if "factors" in request.GET:
-                respondent.position += 1
-                respondent.factors = request.GET["factors"][:255]
-                if "additional" in request.GET:
-                    respondent.additional = request.GET["additional"][:255]
-                respondent.save()
-                return redirect("thanks", respondent_id, respondent.position)
-            return redirect("thoughts", respondent_id, respondent.position)
-            # thoughts
-        else: # position 17
-            if "mturk_id" in request.GET:
-                respondent.position += 1
-                respondent.mturk_id = request.GET["mturk_id"][:50]
-                respondent.save()
-                return render(request, "v1/code.html")
-            return redirect("thanks", respondent_id, respondent.position)
-            # thanks
-    else: # trying to use back button case
+    else:
         return redirect("driver", respondent_id, respondent.position)
+       
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def survey(request, respondent_id, position):
@@ -173,10 +195,10 @@ def export_ratings(request):
 def export_products(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
-    writer.writerow(['id', 'name', 'amazon_id', 'review1', 'review2', 'review3'])
+    writer.writerow(['id', 'name', 'amazon_id', 'review1', 'review2', 'review3', 'num_responses'])
     
     for p in Product.objects.all():
-        writer.writerow([p.id, p.name, p.amazon_id, p.review1, p.review2, p.review3])
+        writer.writerow([p.id, p.name, p.amazon_id, p.review1, p.review2, p.review3, p.num_responses])
         
     today = datetime.date.today()
     filename = "products_" + today.strftime("%m_%d_%Y") + ".csv"

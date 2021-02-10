@@ -5,7 +5,7 @@ from django.db import models
 class Respondent(models.Model):
     position = models.PositiveSmallIntegerField(default=0)
     date = models.DateTimeField(auto_now_add=True)
-    product_seq = models.CharField(max_length=100, default="None")
+    product_seq = models.CharField(max_length=150, default="None")
     mturk_id = models.CharField(max_length=50, default="None")
     factors = models.CharField(max_length=255, default="None")
     additional = models.CharField(max_length=255, default="None")

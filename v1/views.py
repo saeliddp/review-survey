@@ -8,15 +8,16 @@ import csv, datetime
 responses_per_prod = 5
 responses_per_user = 10
 
+# select the next product to display reviews for
 # prod_seq_entries should be a list of product ids
 def get_next_product(prod_seq_entries=[]):
     global responses_per_prod
     
     products = Product.objects.filter(num_responses__lt=responses_per_prod)
-    # FOR TESTING ONLY
+    # filter out unwanted product IDs
     products = products.filter(id__lt=635)
     products = products.filter(id__gt=60)
-    #print(len(products))
+    
     indices = []
     prod_seq_entries = [int(i) for i in prod_seq_entries]
     
@@ -44,26 +45,30 @@ def instructions(request):
     else:
         return render(request, "v1/instructions.html")
     
+# driver handles the control flow for the survey website
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)    
 def driver(request, respondent_id, position):
     global responses_per_prod
     global responses_per_user
-    # find user, compare given position with database position
+    # find current user, compare given position with database position
     respondent = Respondent.objects.get(id=respondent_id)
     
-    if respondent.position == position: # normal case 
+    if respondent.position == position: # normal case (no back button has been pressed) 
         prod_seq_entries = respondent.product_seq.split(" ")
+        # tracks where the user should be in the survey
         respondent.position += 1
         
         if prod_seq_entries[0] == "None": # first survey
             next_prod = get_next_product()
+            # we have no more products left -> immediately show complete
             if next_prod is None:
                 return render(request, "v1/complete.html")
             else:
+                # save that this user has been shown this product
                 respondent.product_seq = str(next_prod.id)
                 respondent.save()
                 return redirect("survey", respondent_id, respondent.position)
-                
+        # user needs to be shown the factors survey
         elif prod_seq_entries[0] == "Factors":
             if "factors" in request.GET:
                 respondent.product_seq = "MTurk " + respondent.product_seq
@@ -74,7 +79,7 @@ def driver(request, respondent_id, position):
                 return redirect("thanks", respondent_id, respondent.position)
             respondent.save()
             return redirect("thoughts", respondent_id, respondent.position)
-        
+        # user needs to be shown the MTurk ID survey
         elif prod_seq_entries[0] == "MTurk":
             if "mturk_id" in request.GET:
                 respondent.mturk_id = request.GET["mturk_id"][:50]
@@ -82,8 +87,9 @@ def driver(request, respondent_id, position):
                 return render(request, "v1/code.html")
             respondent.save()
             return redirect("thanks", respondent_id, respondent.position)
-            
+        # normal survey case
         elif len(prod_seq_entries) <= responses_per_user:
+            # user has pressed submit
             if "surv_submit" in request.GET:
                 rev1radio = "radio" + str(request.GET["review1place"])
                 rev2radio = "radio" + str(request.GET["review2place"])
@@ -91,15 +97,16 @@ def driver(request, respondent_id, position):
                 
                 prod_id = int(respondent.product_seq.split(" ")[0])
                 prod = Product.objects.get(id=prod_id)
-                
+                # save response
                 Rating(respondent=respondent, product=prod, 
                         review1_rating=request.GET[rev1radio],
                         review2_rating=request.GET[rev2radio],
                         review3_rating=request.GET[rev3radio],
                         time_elapsed=request.GET["time_elapsed"]).save()
+                # we want to continue showing user survey
                 if len(prod_seq_entries) < responses_per_user:
                     next_prod = get_next_product(respondent.product_seq.split(" "))
-                    if next_prod is None:
+                    if next_prod is None: # if we have no remaining products
                         respondent.product_seq = "Factors " + respondent.product_seq
                         respondent.save()
                         return redirect("driver", respondent_id, respondent.position)
@@ -116,10 +123,11 @@ def driver(request, respondent_id, position):
                 respondent.save()
                 return redirect("survey", respondent_id, respondent.position)
             
-    else:
+    else: # user has messed with back button
         return redirect("driver", respondent_id, respondent.position)
        
 
+# load the survey page
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def survey(request, respondent_id, position):
     respondent = Respondent.objects.get(id=respondent_id)
@@ -143,7 +151,8 @@ def survey(request, respondent_id, position):
         "position": position
     }
     return render(request, "v1/survey.html", context)
-    
+
+# load the final thoughts page
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def thoughts(request, respondent_id, position):
     respondent = Respondent.objects.get(id=respondent_id)
@@ -155,6 +164,7 @@ def thoughts(request, respondent_id, position):
     }
     return render(request, 'v1/thoughts.html', context)
 
+# load the thank you page
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def thanks(request, respondent_id, position):
     respondent = Respondent.objects.get(id=respondent_id)
@@ -166,6 +176,7 @@ def thanks(request, respondent_id, position):
     }
     return render(request, 'v1/thanks.html', context)
 
+# allows download of user data in csv
 def export_users(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
@@ -179,6 +190,7 @@ def export_users(request):
     response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
     return response
 
+# allows download of rating data in csv
 def export_ratings(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
@@ -192,6 +204,7 @@ def export_ratings(request):
     response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
     return response
 
+# allows download of product data in csv
 def export_products(request):
     response = HttpResponse(content_type="text/csv")
     writer = csv.writer(response)
